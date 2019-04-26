@@ -3,22 +3,42 @@ package agents
 import (
 	"encoding/json"
 	"fmt"
+	"proposalsubmitters/entities"
+	"proposalsubmitters/utils"
 
 	"github.com/constant-money/constant-chain/blockchain/component"
-	"github.com/constant-money/constant-chain/privacy"
+	"github.com/constant-money/constant-chain/common"
 )
 
 type CascadingAgent struct {
 	AgentAbs
+
+	ProposedTxID *common.Hash
+	Data         *DataRequester
+
+	privKey string
+	payment string
 }
 
-type SubmitDCBProposalMeta struct {
-	DCBParams *component.DCBParams
-	*component.SubmitProposalInfo
+func NewCascadingAgent(rpcClient *utils.HttpClient) *CascadingAgent {
+	return &CascadingAgent{
+		AgentAbs: AgentAbs{
+			ID:        2,
+			Name:      "cascading agent 1",
+			Frequency: 20,
+			Quit:      make(chan bool),
+			RPCClient: rpcClient,
+		},
+		Data: &DataRequester{
+			RPCClient: rpcClient,
+		},
+		privKey: utils.GetENV("DCB_AGENT_PRIVKEY", ""),
+		payment: utils.GetENV("DCB_AGENT_PAYMENT", ""),
+	}
 }
 
-func (ca *CascadingAgent) defaultSubmitDCBProposalMeta() *SubmitDCBProposalMeta {
-	return &SubmitDCBProposalMeta{
+func (ca *CascadingAgent) defaultSubmitDCBProposalMeta() *entities.SubmitDCBProposalMeta {
+	return &entities.SubmitDCBProposalMeta{
 		DCBParams: &component.DCBParams{
 			ListSaleData:             nil,
 			TradeBonds:               nil,
@@ -30,13 +50,16 @@ func (ca *CascadingAgent) defaultSubmitDCBProposalMeta() *SubmitDCBProposalMeta 
 			DividendAmount:           0,
 			ListLoanParams:           nil,
 		},
-		SubmitProposalInfo: &component.SubmitProposalInfo{
-			ExecuteDuration:   100,
-			Explanation:       "Default DCB proposal",
-			PaymentAddress:    privacy.PaymentAddress{},
-			ConstitutionIndex: 1,
-		},
+		ExecuteDuration:   100,
+		Explanation:       "Default DCB proposal",
+		PaymentAddress:    ca.payment,
+		ConstitutionIndex: 1,
 	}
+}
+
+func (ca *CascadingAgent) SubmitDCBProposal(proposal *entities.SubmitDCBProposalMeta) (*entities.DCBProposalRes, error) {
+	res, err := ca.Data.SubmitProposal(proposal)
+	return res, err
 }
 
 func (ca *CascadingAgent) Execute() {
@@ -44,4 +67,7 @@ func (ca *CascadingAgent) Execute() {
 	proposal := ca.defaultSubmitDCBProposalMeta()
 	a, err := json.Marshal(proposal)
 	fmt.Printf("%v %+v\n", err, string(a))
+
+	res, err := ca.SubmitDCBProposal(proposal)
+	fmt.Println(res, err)
 }
