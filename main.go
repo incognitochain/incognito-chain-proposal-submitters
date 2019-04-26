@@ -27,9 +27,9 @@ func NewServer() *Server {
 	f1.Quit = make(chan bool)
 	f1.RPCClient = rpcClient
 
-	m1 := &agents.Monetary1{}
+	m1 := &agents.CascadingAgent{}
 	m1.ID = 2
-	m1.Name = "monetary agent 1"
+	m1.Name = "cascading agent 1"
 	m1.Frequency = 20
 	m1.Quit = make(chan bool)
 	m1.RPCClient = rpcClient
