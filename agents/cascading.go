@@ -25,12 +25,13 @@ func NewCascadingAgent(rpcClient *utils.HttpClient) *CascadingAgent {
 		AgentAbs: AgentAbs{
 			ID:        2,
 			Name:      "cascading agent 1",
-			Frequency: 20,
+			Frequency: 60,
 			Quit:      make(chan bool),
 			RPCClient: rpcClient,
 		},
 		Data: &DataRequester{
 			RPCClient: rpcClient,
+			privKey:   utils.GetENV("DCB_AGENT_PRIVKEY", ""),
 		},
 		privKey: utils.GetENV("DCB_AGENT_PRIVKEY", ""),
 		payment: utils.GetENV("DCB_AGENT_PAYMENT", ""),

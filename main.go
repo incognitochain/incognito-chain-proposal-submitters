@@ -29,7 +29,7 @@ func NewServer() *Server {
 
 	m1 := agents.NewCascadingAgent(rpcClient)
 
-	agents := []agents.Agent{f1, m1}
+	agents := []agents.Agent{m1}
 	quitChan := make(chan os.Signal)
 	signal.Notify(quitChan, syscall.SIGTERM)
 	signal.Notify(quitChan, syscall.SIGINT)

@@ -47,6 +47,7 @@ func (client *HttpClient) RPCCall(
 	if err != nil {
 		return err
 	}
+	fmt.Printf("payload: %s\n", payloadInBytes)
 
 	resp, err := client.Post(rpcEndpoint, "application/json", bytes.NewBuffer(payloadInBytes))
 
