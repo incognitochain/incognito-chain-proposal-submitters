@@ -12,9 +12,9 @@ type DataRequester struct {
 	privKey string
 }
 
-func (dr *DataRequester) SubmitProposal(proposal *entities.SubmitDCBProposalMeta) (*entities.DCBProposalRes, error) {
+func (dr *DataRequester) SubmitProposal(proposal *entities.SubmitDCBProposalMeta) (*entities.DCBProposalResponse, error) {
 	method := utils.SubmitDCBProposalMethod
-	res := &entities.DCBProposalRes{}
+	res := &entities.DCBProposalResponse{}
 	err := dr.createAndSendTx(method, proposal, res)
 	fmt.Printf("res: %+v\n", res)
 	fmt.Printf("res rpcerr: %+v\n", res.RPCError)

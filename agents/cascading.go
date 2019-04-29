@@ -41,15 +41,15 @@ func NewCascadingAgent(rpcClient *utils.HttpClient) *CascadingAgent {
 func (ca *CascadingAgent) defaultSubmitDCBProposalMeta() *entities.SubmitDCBProposalMeta {
 	return &entities.SubmitDCBProposalMeta{
 		DCBParams: &component.DCBParams{
-			ListSaleData:             nil,
-			TradeBonds:               nil,
+			ListSaleData:             []component.SaleData{},
+			TradeBonds:               []*component.TradeBondWithGOV{},
 			MinLoanResponseRequire:   0,
 			MinCMBApprovalRequire:    0,
 			LateWithdrawResponseFine: 0,
 			RaiseReserveData:         nil,
 			SpendReserveData:         nil,
 			DividendAmount:           0,
-			ListLoanParams:           nil,
+			ListLoanParams:           []component.LoanParams{},
 		},
 		ExecuteDuration:   100,
 		Explanation:       "Default DCB proposal",
@@ -58,9 +58,8 @@ func (ca *CascadingAgent) defaultSubmitDCBProposalMeta() *entities.SubmitDCBProp
 	}
 }
 
-func (ca *CascadingAgent) SubmitDCBProposal(proposal *entities.SubmitDCBProposalMeta) (*entities.DCBProposalRes, error) {
-	res, err := ca.Data.SubmitProposal(proposal)
-	return res, err
+func (ca *CascadingAgent) SubmitDCBProposal(proposal *entities.SubmitDCBProposalMeta) (*entities.DCBProposalResponse, error) {
+	return ca.Data.SubmitProposal(proposal)
 }
 
 func (ca *CascadingAgent) Execute() {

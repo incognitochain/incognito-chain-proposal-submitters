@@ -4,9 +4,14 @@ import (
 	"github.com/constant-money/constant-chain/blockchain/component"
 )
 
-type DCBProposalRes struct {
+type DCBProposalResult struct {
+	TxID    string `json:"txid"`
+	ShardID byte
+}
+
+type DCBProposalResponse struct {
 	RPCBaseRes
-	Result interface{}
+	Result DCBProposalResult `json:"result"`
 }
 
 type SubmitDCBProposalMeta struct {

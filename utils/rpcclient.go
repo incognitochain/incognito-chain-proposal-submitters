@@ -39,9 +39,10 @@ func (client *HttpClient) RPCCall(
 	rpcEndpoint := buildHttpServerAddress(rpcProtocol, rpcHost, rpcPort)
 
 	payload := map[string]interface{}{
-		"method": method,
-		"params": params,
-		"id":     0,
+		"jsonrpc": "1.0",
+		"method":  method,
+		"params":  params,
+		"id":      1,
 	}
 	payloadInBytes, err := json.Marshal(payload)
 	if err != nil {
