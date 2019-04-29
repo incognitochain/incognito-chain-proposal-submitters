@@ -2,6 +2,7 @@ package entities
 
 import (
 	"github.com/constant-money/constant-chain/blockchain/component"
+	"github.com/constant-money/constant-chain/common"
 )
 
 type DCBProposalResult struct {
@@ -20,4 +21,13 @@ type SubmitDCBProposalMeta struct {
 	Explanation       string
 	PaymentAddress    string
 	ConstitutionIndex uint32
+}
+
+type DCBBondInfo struct {
+	Amount uint64
+	BondID common.Hash
+	Price  uint64 // average price when buying bonds
+
+	Maturity uint64
+	BuyBack  uint64 // price for selling to GOV
 }
