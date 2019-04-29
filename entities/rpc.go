@@ -1,8 +1,9 @@
 package entities
 
 type RPCError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code       int    `json:"code"`
+	Message    string `json:"message"`
+	StackTrace string `json:"stacktrace"`
 }
 
 type RPCBaseRes struct {
