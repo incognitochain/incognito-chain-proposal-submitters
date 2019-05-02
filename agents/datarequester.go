@@ -60,10 +60,11 @@ func (dr *DataRequester) OngoingProposalInfo() (*entities.DCBProposalInfo, error
 		return nil, aggErr(err, resp.RPCError)
 	}
 
+	c := resp.Result.DCBConstitution
 	return &entities.DCBProposalInfo{
-		DCBParams:         nil,
-		EndBlock:          1000,
-		ConstitutionIndex: 0,
-		SubmittedBlock:    1,
+		DCBParams:          &c.DCBParams,
+		EndBlock:           c.StartedBlockHeight + c.ExecuteDuration,
+		ConstitutionIndex:  c.ConstitutionIndex,
+		StartedBlockHeight: c.StartedBlockHeight,
 	}, nil
 }

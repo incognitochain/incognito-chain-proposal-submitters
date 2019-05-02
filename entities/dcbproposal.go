@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"github.com/constant-money/constant-chain/blockchain"
 	"github.com/constant-money/constant-chain/blockchain/component"
 	"github.com/constant-money/constant-chain/common"
 )
@@ -43,13 +44,14 @@ type DCBBondInfo struct {
 
 // DCBProposalInfo stores a proposal's params as well as its term and start/end block
 type DCBProposalInfo struct {
-	DCBParams         *component.DCBParams
-	EndBlock          uint64
-	ConstitutionIndex uint32
-	SubmittedBlock    uint64
+	DCBParams          *component.DCBParams
+	EndBlock           uint64
+	ConstitutionIndex  uint32
+	StartedBlockHeight uint64
 }
 
 // StabilityInfoResponse stores response of GetCurrentStabilityInfo rpc
 type StabilityInfoResponse struct {
 	RPCBaseRes
+	Result *blockchain.StabilityInfo
 }

@@ -168,7 +168,7 @@ func (ca *CascadingAgent) evaluatingProposal() (bool, error) {
 		return false, err
 	}
 
-	evaluationEndBlock := (info.SubmittedBlock + info.EndBlock) / 2
+	evaluationEndBlock := (info.StartedBlockHeight + info.EndBlock) / 2
 	if evaluationEndBlock > blockHeight {
 		return true, nil // Current proposal was submitted recently
 	}
