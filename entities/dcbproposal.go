@@ -40,3 +40,11 @@ type DCBBondInfo struct {
 	Maturity uint64
 	BuyBack  uint64 // price for selling to GOV
 }
+
+// DCBProposalInfo stores a proposal's params as well as its term and start/end block
+type DCBProposalInfo struct {
+	DCBParams         *component.DCBParams
+	EndBlock          uint64
+	ConstitutionIndex uint32
+	SubmittedBlock    uint64
+}

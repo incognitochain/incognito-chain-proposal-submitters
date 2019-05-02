@@ -14,13 +14,3 @@ const (
 	PriceCeiling = 10
 	PriceFloor   = 10
 )
-
-type ProposalStatus int
-
-const (
-	Empty ProposalStatus = iota
-	Voting
-	Lost
-	Won
-	Done
-)

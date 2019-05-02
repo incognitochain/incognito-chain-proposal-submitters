@@ -163,42 +163,44 @@ func (ca *CascadingAgent) buildExpandingProposal(price uint64) (*entities.Submit
 	return nil, nil
 }
 
+func (ca *CascadingAgent) evaluatingProposal() (bool, error) {
+	blockHeight, err := ca.Data.BlockHeight()
+	if err != nil {
+		return false, err
+	}
+
+	// Check current proposal and if we need to submit a new one
+	info, err := ca.Data.OngoingProposalInfo()
+	if err != nil {
+		return false, err
+	}
+
+	evaluationEndBlock := (info.SubmittedBlock + info.EndBlock) / 2
+	if evaluationEndBlock > blockHeight {
+		return true, nil // Current proposal was submitted recently
+	}
+
+	if ca.Proposal == nil {
+		return false, nil // No proposal submitted
+	}
+
+	if ca.Proposal.Data.ConstitutionIndex == info.ConstitutionIndex {
+		return true, nil // Voting submitted proposal
+	}
+
+	ca.Proposal = nil // New term
+	return false, nil
+}
+
 func (ca *CascadingAgent) Execute() {
 	fmt.Println("CascadingAgent agent is executing...")
-	// Check previous proposal and if we need to submit a new one
-	status, err := ca.Data.ProposalStatus(ca.Proposal)
-	if err != nil {
+	if evaluating, err := ca.evaluatingProposal(); err != nil {
 		fmt.Println(err)
 		return
+	} else if evaluating {
+		fmt.Println("Evaluating ongoing proposal...")
+		return
 	}
-
-	switch status {
-	case Empty:
-		break // No proposal, continue
-
-	case Voting:
-		return // Wait until voting is over
-
-	case Lost, Won:
-		blockHeight, err := ca.Data.BlockHeight()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if ca.Proposal.AcceptedHeight == 0 {
-			ca.Proposal.AcceptedHeight = blockHeight
-		}
-		endHeight := ca.Proposal.AcceptedHeight + ca.Proposal.Data.ExecuteDuration
-		if endHeight > 2*blockHeight {
-			return // Keep waiting until proposal
-		}
-
-	case Done:
-		ca.Proposal = nil // Reset
-	}
-
-	// Wait if our proposal has just been accepted
 
 	price, err := ca.Data.AssetPrice(common.ConstantID)
 	if err != nil {

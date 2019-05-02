@@ -51,6 +51,6 @@ func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
 	return nil, nil
 }
 
-func (dr *DataRequester) ProposalStatus(p *entities.Proposal) (ProposalStatus, error) {
-	return Empty, nil
+func (dr *DataRequester) OngoingProposalInfo() (*entities.DCBProposalInfo, error) {
+	return nil, nil
 }
