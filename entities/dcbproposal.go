@@ -48,3 +48,8 @@ type DCBProposalInfo struct {
 	ConstitutionIndex uint32
 	SubmittedBlock    uint64
 }
+
+// StabilityInfoResponse stores response of GetCurrentStabilityInfo rpc
+type StabilityInfoResponse struct {
+	RPCBaseRes
+}

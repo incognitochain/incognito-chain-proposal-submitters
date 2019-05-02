@@ -67,15 +67,8 @@ func (ca *CascadingAgent) submitDCBProposal(proposal *entities.SubmitDCBProposal
 	}
 
 	resp, err := ca.Data.SubmitProposal(proposal)
-	if err != nil {
-		return nil, err
-	} else if resp.RPCError != nil {
-		return nil, fmt.Errorf(
-			"%v %v %v",
-			resp.RPCError.Code,
-			resp.RPCError.Message,
-			resp.RPCError.StackTrace,
-		)
+	if err != nil || resp.RPCError != nil {
+		return nil, aggErr(err, resp.RPCError)
 	}
 
 	return &entities.Proposal{

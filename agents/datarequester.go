@@ -52,6 +52,14 @@ func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
 }
 
 func (dr *DataRequester) OngoingProposalInfo() (*entities.DCBProposalInfo, error) {
+	method := rpcserver.GetCurrentStabilityInfo
+	params := []interface{}{}
+	resp := &entities.StabilityInfoResponse{}
+	err := dr.RPCClient.RPCCall(method, params, resp)
+	if err != nil || resp.RPCError != nil {
+		return nil, aggErr(err, resp.RPCError)
+	}
+
 	return &entities.DCBProposalInfo{
 		DCBParams:         nil,
 		EndBlock:          1000,
