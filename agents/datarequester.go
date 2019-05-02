@@ -50,3 +50,7 @@ func (dr *DataRequester) AssetPrice(assetID common.Hash) (uint64, error) {
 func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
 	return nil, nil
 }
+
+func (dr *DataRequester) ProposalStatus(p *entities.Proposal) (ProposalStatus, error) {
+	return Empty, nil
+}

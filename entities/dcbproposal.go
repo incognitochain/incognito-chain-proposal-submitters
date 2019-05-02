@@ -23,6 +23,15 @@ type SubmitDCBProposalMeta struct {
 	ConstitutionIndex uint32
 }
 
+// Proposal the submitted proposal data and metadata
+type Proposal struct {
+	Data         *SubmitDCBProposalMeta
+	ProposedTxID string
+
+	AcceptedHeight  uint64
+	SubmittedHeight uint64
+}
+
 type DCBBondInfo struct {
 	Amount uint64
 	BondID common.Hash

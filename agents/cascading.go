@@ -12,8 +12,8 @@ import (
 type CascadingAgent struct {
 	AgentAbs
 
-	ProposedTxID string
-	Data         *DataRequester
+	Proposal *entities.Proposal
+	Data     *DataRequester
 
 	NumSaleAccepted  int
 	NumTradeAccepted int
@@ -60,8 +60,28 @@ func (ca *CascadingAgent) defaultSubmitDCBProposalMeta() *entities.SubmitDCBProp
 	}
 }
 
-func (ca *CascadingAgent) submitDCBProposal(proposal *entities.SubmitDCBProposalMeta) (*entities.DCBProposalResponse, error) {
-	return ca.Data.SubmitProposal(proposal)
+func (ca *CascadingAgent) submitDCBProposal(proposal *entities.SubmitDCBProposalMeta) (*entities.Proposal, error) {
+	blockHeight, err := ca.Data.BlockHeight()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := ca.Data.SubmitProposal(proposal)
+	if err != nil {
+		return nil, err
+	} else if resp.RPCError != nil {
+		return nil, fmt.Errorf(
+			"%v %v %v",
+			resp.RPCError.Code,
+			resp.RPCError.Message,
+			resp.RPCError.StackTrace,
+		)
+	}
+
+	return &entities.Proposal{
+		ProposedTxID:    resp.Result.TxID,
+		SubmittedHeight: blockHeight,
+	}, nil
 }
 
 func (ca *CascadingAgent) buildProposal(
@@ -145,8 +165,37 @@ func (ca *CascadingAgent) buildExpandingProposal(price uint64) (*entities.Submit
 
 func (ca *CascadingAgent) Execute() {
 	fmt.Println("CascadingAgent agent is executing...")
-	// If a proposal was submitted, wait for voting
-	if len(ca.ProposedTxID) > 0 {
+	// Check previous proposal and if we need to submit a new one
+	status, err := ca.Data.ProposalStatus(ca.Proposal)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	switch status {
+	case Empty:
+		break // No proposal, continue
+
+	case Voting:
+		return // Wait until voting is over
+
+	case Lost, Won:
+		blockHeight, err := ca.Data.BlockHeight()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if ca.Proposal.AcceptedHeight == 0 {
+			ca.Proposal.AcceptedHeight = blockHeight
+		}
+		endHeight := ca.Proposal.AcceptedHeight + ca.Proposal.Data.ExecuteDuration
+		if endHeight > 2*blockHeight {
+			return // Keep waiting until proposal
+		}
+
+	case Done:
+		ca.Proposal = nil // Reset
 	}
 
 	// Wait if our proposal has just been accepted
@@ -161,10 +210,11 @@ func (ca *CascadingAgent) Execute() {
 	if price > Peg+PriceCeiling {
 		// Price is above peg, reduce supply
 		proposal, err = ca.buildContractingProposal(price)
-
 	} else if price < Peg+PriceFloor {
 		// Price is below peg, increase supply
 		proposal, err = ca.buildExpandingProposal(price)
+	} else {
+		return
 	}
 
 	if err != nil {
@@ -173,10 +223,10 @@ func (ca *CascadingAgent) Execute() {
 	}
 
 	// Submit proposal and save TxID
-	res, err := ca.submitDCBProposal(proposal)
-	if err != nil || res.RPCError != nil {
-		fmt.Println(err, res.RPCError)
+	p, err := ca.submitDCBProposal(proposal)
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
-	ca.ProposedTxID = res.Result.TxID
+	ca.Proposal = p
 }
