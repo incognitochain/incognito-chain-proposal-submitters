@@ -27,7 +27,7 @@ func NewCascadingAgent(rpcClient *utils.HttpClient) *CascadingAgent {
 		AgentAbs: AgentAbs{
 			ID:        2,
 			Name:      "cascading agent 1",
-			Frequency: 60,
+			Frequency: 12,
 			Quit:      make(chan bool),
 			RPCClient: rpcClient,
 		},

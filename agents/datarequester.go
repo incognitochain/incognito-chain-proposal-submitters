@@ -36,7 +36,7 @@ func (dr *DataRequester) createAndSendTx(method string, meta, rpcResponse interf
 }
 
 func (dr *DataRequester) BlockHeight() (uint64, error) {
-	return 1, nil
+	return 600, nil
 }
 
 func (dr *DataRequester) ConstantCirculating() (uint64, error) {
@@ -52,5 +52,10 @@ func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
 }
 
 func (dr *DataRequester) OngoingProposalInfo() (*entities.DCBProposalInfo, error) {
-	return nil, nil
+	return &entities.DCBProposalInfo{
+		DCBParams:         nil,
+		EndBlock:          1000,
+		ConstitutionIndex: 0,
+		SubmittedBlock:    1,
+	}, nil
 }
