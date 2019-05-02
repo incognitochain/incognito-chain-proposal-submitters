@@ -36,7 +36,15 @@ func (dr *DataRequester) createAndSendTx(method string, meta, rpcResponse interf
 }
 
 func (dr *DataRequester) BlockHeight() (uint64, error) {
-	return 600, nil
+	method := rpcserver.GetBeaconBestState
+	params := []interface{}{}
+	resp := &entities.BeaconBestStateResponse{}
+	err := dr.RPCClient.RPCCall(method, params, resp)
+	if err != nil || resp.RPCError != nil {
+		return 0, aggErr(err, resp.RPCError)
+	}
+
+	return resp.Result.BeaconHeight, nil
 }
 
 func (dr *DataRequester) ConstantCirculating() (uint64, error) {

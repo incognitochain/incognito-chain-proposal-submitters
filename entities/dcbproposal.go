@@ -55,3 +55,12 @@ type StabilityInfoResponse struct {
 	RPCBaseRes
 	Result *blockchain.StabilityInfo
 }
+
+type BeaconBestStateResult struct {
+	BeaconHeight uint64
+}
+
+type BeaconBestStateResponse struct {
+	RPCBaseRes
+	Result *BeaconBestStateResult
+}
