@@ -60,7 +60,15 @@ func (dr *DataRequester) ConstantCirculating() (uint64, error) {
 }
 
 func (dr *DataRequester) AssetPrice(assetID common.Hash) (uint64, error) {
-	return 200, nil
+	method := rpcserver.GetAssetPrice
+	params := []interface{}{assetID.String()}
+	resp := &entities.AssetPriceResponse{}
+	err := dr.RPCClient.RPCCall(method, params, resp)
+	if err != nil || resp.RPCError != nil {
+		return 0, entities.AggErr(err, resp.RPCError)
+	}
+
+	return resp.Result, nil
 }
 
 func (dr *DataRequester) BondsCirculating() ([]*jsonresult.GetBondTypeResultItem, error) {

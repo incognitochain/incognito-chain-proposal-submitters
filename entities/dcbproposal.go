@@ -91,3 +91,9 @@ type BondTypesResponse struct {
 	RPCBaseRes
 	Result *jsonresult.GetBondTypeResult
 }
+
+// AssetPriceResponse stores response of GetAssetPrice rpc
+type AssetPriceResponse struct {
+	RPCBaseRes
+	Result uint64
+}
