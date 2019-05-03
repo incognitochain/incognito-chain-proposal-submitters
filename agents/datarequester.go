@@ -64,7 +64,19 @@ func (dr *DataRequester) AssetPrice(assetID common.Hash) (uint64, error) {
 }
 
 func (dr *DataRequester) BondsCirculating() ([]*jsonresult.GetBondTypeResultItem, error) {
-	return nil, nil
+	method := rpcserver.GetBondTypes
+	params := []interface{}{}
+	resp := &entities.BondTypesResponse{}
+	err := dr.RPCClient.RPCCall(method, params, resp)
+	if err != nil || resp.RPCError != nil {
+		return nil, entities.AggErr(err, resp.RPCError)
+	}
+
+	result := []*jsonresult.GetBondTypeResultItem{}
+	for _, b := range resp.Result.BondTypes {
+		result = append(result, &b)
+	}
+	return result, nil
 }
 
 func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
@@ -88,7 +100,7 @@ func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
 
 			if p.BondID.IsEqual(bondID) {
 				p.Price = b.BuyPrice // TODO(@0xbunyip): set average buying price
-				p.Maturity = b.Maturity
+				p.Maturity = b.Maturity + b.StartSellingAt
 				p.BuyBack = b.BuyBackPrice
 			}
 		}
