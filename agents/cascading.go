@@ -68,7 +68,7 @@ func (ca *CascadingAgent) submitDCBProposal(proposal *entities.SubmitDCBProposal
 
 	resp, err := ca.Data.SubmitProposal(proposal)
 	if err != nil || resp.RPCError != nil {
-		return nil, aggErr(err, resp.RPCError)
+		return nil, entities.AggErr(err, resp.RPCError)
 	}
 
 	return &entities.Proposal{
@@ -146,7 +146,7 @@ func (ca *CascadingAgent) buildContractingProposal(price uint64) (*entities.Subm
 	}
 
 	if sales == nil && trades == nil && spends == nil {
-		return nil, common.CheckError(errSale, errTrade, errSpend)
+		return nil, entities.CheckError(errSale, errTrade, errSpend)
 	}
 	proposal := ca.buildProposal(sales, trades, spends, nil)
 	return proposal, nil

@@ -41,7 +41,7 @@ func (dr *DataRequester) BlockHeight() (uint64, error) {
 	resp := &entities.BeaconBestStateResponse{}
 	err := dr.RPCClient.RPCCall(method, params, resp)
 	if err != nil || resp.RPCError != nil {
-		return 0, aggErr(err, resp.RPCError)
+		return 0, entities.AggErr(err, resp.RPCError)
 	}
 
 	return resp.Result.BeaconHeight, nil
@@ -65,7 +65,7 @@ func (dr *DataRequester) OngoingProposalInfo() (*entities.DCBProposalInfo, error
 	resp := &entities.StabilityInfoResponse{}
 	err := dr.RPCClient.RPCCall(method, params, resp)
 	if err != nil || resp.RPCError != nil {
-		return nil, aggErr(err, resp.RPCError)
+		return nil, entities.AggErr(err, resp.RPCError)
 	}
 
 	c := resp.Result.DCBConstitution
