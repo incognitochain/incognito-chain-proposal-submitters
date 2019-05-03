@@ -68,3 +68,13 @@ type BeaconBestStateResponse struct {
 type BeaconBestStateResult struct {
 	BeaconHeight uint64
 }
+
+// BeaconBestStateResponse stores response of GetConstantCirculating rpc
+type ConstantCirculatingResponse struct {
+	RPCBaseRes
+	Result *ConstantCirculatingResult
+}
+
+type ConstantCirculatingResult struct {
+	Total uint64
+}

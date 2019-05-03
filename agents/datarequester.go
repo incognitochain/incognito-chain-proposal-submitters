@@ -48,7 +48,14 @@ func (dr *DataRequester) BlockHeight() (uint64, error) {
 }
 
 func (dr *DataRequester) ConstantCirculating() (uint64, error) {
-	return 0, nil
+	method := rpcserver.GetConstantCirculating
+	params := []interface{}{}
+	resp := &entities.ConstantCirculatingResponse{}
+	err := dr.RPCClient.RPCCall(method, params, resp)
+	if err != nil || resp.RPCError != nil {
+		return 0, entities.AggErr(err, resp.RPCError)
+	}
+	return resp.Result.Total, nil
 }
 
 func (dr *DataRequester) AssetPrice(assetID common.Hash) (uint64, error) {

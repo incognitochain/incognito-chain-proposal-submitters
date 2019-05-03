@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/certifi/gocertifi v0.0.0-20190415143156-92f724a62f3e // indirect
-	github.com/constant-money/constant-chain v0.0.0-20190429100803-0ffe43758f93
+	github.com/constant-money/constant-chain v0.0.0-20190503045430-139c4d5fef47
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dchest/siphash v1.2.1 // indirect
 	github.com/dgryski/go-identicon v0.0.0-20140725220403-371855927d74 // indirect
