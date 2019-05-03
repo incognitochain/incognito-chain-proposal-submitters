@@ -6,16 +6,18 @@ import (
 	"github.com/constant-money/constant-chain/common"
 )
 
-type DCBProposalResult struct {
-	TxID    string `json:"txid"`
-	ShardID byte
-}
-
+// DCBProposalResponse stores response of CreateAndSendSubmitDCBProposalTx rpc
 type DCBProposalResponse struct {
 	RPCBaseRes
 	Result DCBProposalResult `json:"result"`
 }
 
+type DCBProposalResult struct {
+	TxID    string `json:"txid"`
+	ShardID byte
+}
+
+// DCBProposalResponse stores payload of CreateAndSendSubmitDCBProposalTx rpc
 type SubmitDCBProposalMeta struct {
 	DCBParams         *component.DCBParams
 	ExecuteDuration   uint64
@@ -33,6 +35,7 @@ type Proposal struct {
 	SubmittedHeight uint64
 }
 
+// DCBBondInfo contains amount and average price of bonds that DCB holds
 type DCBBondInfo struct {
 	Amount uint64
 	BondID common.Hash
@@ -56,11 +59,12 @@ type StabilityInfoResponse struct {
 	Result *blockchain.StabilityInfo
 }
 
-type BeaconBestStateResult struct {
-	BeaconHeight uint64
-}
-
+// BeaconBestStateResponse stores response of GetBeaconBestState rpc
 type BeaconBestStateResponse struct {
 	RPCBaseRes
 	Result *BeaconBestStateResult
+}
+
+type BeaconBestStateResult struct {
+	BeaconHeight uint64
 }
