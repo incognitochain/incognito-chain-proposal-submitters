@@ -129,7 +129,11 @@ func (ca *CascadingAgent) buildContractingProposal(price uint64) (*entities.Subm
 		return nil, err
 	}
 
-	burnAmount := uint64(float64(price-Peg) * float64(circulation))
+	burnAmount := uint64(float64(price-Peg) * float64(circulation) / float64(Peg))
+	if burnAmount < MinAmountToBurn {
+		return nil, nil
+	}
+
 	if ca.NumSaleAccepted == 0 {
 		// Sell bonds to open market
 		sales, errSale = buildCrowdsalesSellBond(burnAmount, price, blockHeight, bonds)
@@ -218,6 +222,10 @@ func (ca *CascadingAgent) Execute() {
 	}
 
 	// Submit proposal and save TxID
+	if proposal == nil {
+		return
+	}
+
 	p, err := ca.submitDCBProposal(proposal)
 	if err != nil {
 		fmt.Println(err)

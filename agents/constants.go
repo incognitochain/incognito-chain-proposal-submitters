@@ -13,4 +13,7 @@ const (
 	// Acceptable range of price to be above/below the peg
 	PriceCeiling = 10
 	PriceFloor   = 10
+
+	// Min amount of Constant needed to burn/grow in order to submit a proposal
+	MinAmountToBurn = uint64(1000)
 )

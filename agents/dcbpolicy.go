@@ -26,13 +26,14 @@ func buildCrowdsalesSellBond(
 		return nil, nil
 	}
 
+	sellingAmount := 1 + (burnAmount-1)/bondToSell.Price
 	sale := component.SaleData{
 		EndBlock:         blockHeight + 1000,
 		BuyingAsset:      common.ConstantID,
 		BuyingAmount:     burnAmount,
 		DefaultBuyPrice:  constantPrice,
 		SellingAsset:     bondToSell.BondID,
-		SellingAmount:    burnAmount / bondToSell.Price,
+		SellingAmount:    sellingAmount,
 		DefaultSellPrice: bondToSell.Price,
 	}
 	return []component.SaleData{sale}, nil
@@ -55,9 +56,10 @@ func buildTradeSellBond(
 		return nil, nil
 	}
 
+	amount := 1 + (burnAmount-1)/bondToSell.BuyBack
 	trade := &component.TradeBondWithGOV{
 		BondID: &bondToSell.BondID,
-		Amount: burnAmount / bondToSell.BuyBack,
+		Amount: amount,
 		Buy:    false,
 	}
 	return []*component.TradeBondWithGOV{trade}, nil
