@@ -4,6 +4,7 @@ import (
 	"github.com/constant-money/constant-chain/blockchain"
 	"github.com/constant-money/constant-chain/blockchain/component"
 	"github.com/constant-money/constant-chain/common"
+	"github.com/constant-money/constant-chain/rpcserver/jsonresult"
 )
 
 // DCBProposalResponse stores response of CreateAndSendSubmitDCBProposalTx rpc
@@ -77,4 +78,16 @@ type ConstantCirculatingResponse struct {
 
 type ConstantCirculatingResult struct {
 	Total uint64
+}
+
+// ListCustomTokenBalanceResponse stores response of GetListCustomTokenBalance rpc
+type ListCustomTokenBalanceResponse struct {
+	RPCBaseRes
+	Result *jsonresult.ListCustomTokenBalance
+}
+
+// BondTypesResponse stores response of GetBondTypes rpc
+type BondTypesResponse struct {
+	RPCBaseRes
+	Result *jsonresult.GetBondTypeResult
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/constant-money/constant-chain/common"
 	"github.com/constant-money/constant-chain/rpcserver"
+	"github.com/constant-money/constant-chain/rpcserver/jsonresult"
 )
 
 type DataRequester struct {
@@ -59,11 +60,65 @@ func (dr *DataRequester) ConstantCirculating() (uint64, error) {
 }
 
 func (dr *DataRequester) AssetPrice(assetID common.Hash) (uint64, error) {
-	return 0, nil
+	return 200, nil
+}
+
+func (dr *DataRequester) BondsCirculating() ([]*jsonresult.GetBondTypeResultItem, error) {
+	return nil, nil
 }
 
 func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
-	return nil, nil
+	portfolio, err := dr.buildDCBBondPortfolio()
+	if err != nil || len(portfolio) == 0 {
+		return nil, err
+	}
+
+	bonds, err := dr.BondsCirculating()
+	if err != nil {
+		return nil, err
+	}
+
+	// Set price and maturity
+	for _, p := range portfolio {
+		for _, b := range bonds {
+			bondID, err := common.NewHashFromStr(b.BondID)
+			if err != nil {
+				continue
+			}
+
+			if p.BondID.IsEqual(bondID) {
+				p.Price = b.BuyPrice // TODO(@0xbunyip): set average buying price
+				p.Maturity = b.Maturity
+				p.BuyBack = b.BuyBackPrice
+			}
+		}
+	}
+	return portfolio, nil
+}
+
+func (dr *DataRequester) buildDCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
+	method := rpcserver.GetListCustomTokenBalance
+	dcbPayment := "1Uv46Pu4pqBvxCcPw7MXhHfiAD5Rmi2xgEE7XB6eQurFAt4vSYvfyGn3uMMB1xnXDq9nRTPeiAZv5gRFCBDroRNsXJF1sxPSjNQtivuHk"
+	params := []interface{}{dcbPayment}
+	resp := &entities.ListCustomTokenBalanceResponse{}
+	err := dr.RPCClient.RPCCall(method, params, resp)
+	if err != nil || resp.RPCError != nil {
+		return nil, entities.AggErr(err, resp.RPCError)
+	}
+
+	portfolio := []*entities.DCBBondInfo{}
+	for _, t := range resp.Result.ListCustomTokenBalance {
+		tid, err := common.NewHashFromStr(t.TokenID)
+		if err != nil || !common.IsBondAsset(tid) {
+			continue
+		}
+
+		portfolio = append(portfolio, &entities.DCBBondInfo{
+			Amount: t.Amount,
+			BondID: *tid,
+		})
+	}
+	return portfolio, nil
 }
 
 func (dr *DataRequester) OngoingProposalInfo() (*entities.DCBProposalInfo, error) {
