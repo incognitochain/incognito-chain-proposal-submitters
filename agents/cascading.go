@@ -129,7 +129,7 @@ func (ca *CascadingAgent) buildContractingProposal(price uint64) (*entities.Subm
 		return nil, err
 	}
 
-	burnAmount := uint64(float64(price-Peg) * float64(circulation) / float64(Peg))
+	burnAmount := uint64(float64(Peg-price) * float64(circulation) / float64(Peg))
 	if burnAmount < MinAmountToBurn {
 		return nil, nil
 	}
@@ -206,11 +206,11 @@ func (ca *CascadingAgent) Execute() {
 	}
 
 	var proposal *entities.SubmitDCBProposalMeta
-	if price > Peg+PriceCeiling {
-		// Price is above peg, reduce supply
+	if price < Peg-PriceFloor {
+		// Price is below peg, reduce supply
 		proposal, err = ca.buildContractingProposal(price)
-	} else if price < Peg+PriceFloor {
-		// Price is below peg, increase supply
+	} else if price > Peg+PriceFloor {
+		// Price is above peg, increase supply
 		proposal, err = ca.buildExpandingProposal(price)
 	} else {
 		return
