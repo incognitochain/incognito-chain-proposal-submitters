@@ -72,6 +72,7 @@ func (ca *CascadingAgent) submitDCBProposal(proposal *entities.SubmitDCBProposal
 	}
 
 	return &entities.Proposal{
+		Data:            proposal,
 		ProposedTxID:    resp.Result.TxID,
 		SubmittedHeight: blockHeight,
 	}, nil
@@ -101,7 +102,7 @@ func (ca *CascadingAgent) buildProposal(
 			DividendAmount:           0,
 			ListLoanParams:           []component.LoanParams{},
 		},
-		ExecuteDuration:   1000,
+		ExecuteDuration:   100,
 		Explanation:       "Bot proposal",
 		PaymentAddress:    ca.payment,
 		ConstitutionIndex: 1, // TODO(@0xbunyip) update CI
