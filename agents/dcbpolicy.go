@@ -90,13 +90,55 @@ func buildCrowdsalesBuyBond(
 	mintAmount uint64,
 	constantPrice uint64,
 	blockHeight uint64,
+	dr *DataRequester,
 ) ([]component.SaleData, error) {
-	return nil, nil
+	bonds, err := dr.BondsCirculating()
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if there's a bond that can mint mintAmount of Constant
+	var bondToBuy *entities.DCBBondInfo
+	for _, b := range bonds {
+		if b.Price > 0 && b.Price*b.Amount >= mintAmount {
+			bondToBuy = b
+			break
+		}
+	}
+	if bondToBuy == nil {
+		return nil, nil
+	}
+
+	buyingAmount := 1 + (mintAmount-1)/bondToBuy.Price
+	sale := component.SaleData{
+		EndBlock:         blockHeight + 1000,
+		BuyingAsset:      bondToBuy.BondID,
+		BuyingAmount:     buyingAmount,
+		DefaultBuyPrice:  bondToBuy.Price,
+		SellingAsset:     common.ConstantID,
+		SellingAmount:    mintAmount,
+		DefaultSellPrice: constantPrice,
+	}
+	return []component.SaleData{sale}, nil
 }
 
 func buildTradeBuyBond(
 	mintAmount uint64,
 	blockHeight uint64,
+	dr *DataRequester,
 ) ([]*component.TradeBondWithGOV, error) {
-	return nil, nil
+	// Check if GOV's selling bond can cover mintAmount of Constant
+	var bondToBuy *entities.DCBBondInfo
+	bondToBuy, err := dr.CurrentSellingBond()
+	if err != nil || bondToBuy == nil {
+		return nil, err
+	}
+
+	amount := 1 + (mintAmount-1)/bondToBuy.Price
+	trade := &component.TradeBondWithGOV{
+		BondID: &bondToBuy.BondID,
+		Amount: amount,
+		Buy:    true,
+	}
+	return []*component.TradeBondWithGOV{trade}, nil
 }

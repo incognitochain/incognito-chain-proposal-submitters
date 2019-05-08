@@ -71,7 +71,15 @@ func (dr *DataRequester) AssetPrice(assetID common.Hash) (uint64, error) {
 	return resp.Result, nil
 }
 
-func (dr *DataRequester) BondsCirculating() ([]*jsonresult.GetBondTypeResultItem, error) {
+func (dr *DataRequester) BondsCirculating() ([]*entities.DCBBondInfo, error) {
+	return nil, nil
+}
+
+func (dr *DataRequester) CurrentSellingBond() (*entities.DCBBondInfo, error) {
+	return nil, nil
+}
+
+func (dr *DataRequester) bondTypes() ([]*jsonresult.GetBondTypeResultItem, error) {
 	method := rpcserver.GetBondTypes
 	params := []interface{}{}
 	resp := &entities.BondTypesResponse{}
@@ -93,7 +101,7 @@ func (dr *DataRequester) DCBBondPortfolio() ([]*entities.DCBBondInfo, error) {
 		return nil, err
 	}
 
-	bonds, err := dr.BondsCirculating()
+	bonds, err := dr.bondTypes()
 	if err != nil {
 		return nil, err
 	}

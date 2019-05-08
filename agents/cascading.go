@@ -180,12 +180,12 @@ func (ca *CascadingAgent) buildExpandingProposal(price uint64) (*entities.Submit
 	fmt.Println(mintAmount)
 	if ca.NumSaleAccepted < NumSaleToTry {
 		// Buy bonds from open market
-		sales, errSale = buildCrowdsalesBuyBond(mintAmount, price, blockHeight)
+		sales, errSale = buildCrowdsalesBuyBond(mintAmount, price, blockHeight, ca.Data)
 	}
 
 	if sales == nil && ca.NumTradeAccepted == 0 {
 		// Buy bonds from GOV
-		trades, errTrade = buildTradeBuyBond(mintAmount, blockHeight)
+		trades, errTrade = buildTradeBuyBond(mintAmount, blockHeight, ca.Data)
 	}
 
 	if sales == nil && trades == nil {
