@@ -85,3 +85,18 @@ func buildSpendReserve(
 	}
 	return reserve, nil
 }
+
+func buildCrowdsalesBuyBond(
+	mintAmount uint64,
+	constantPrice uint64,
+	blockHeight uint64,
+) ([]component.SaleData, error) {
+	return nil, nil
+}
+
+func buildTradeBuyBond(
+	mintAmount uint64,
+	blockHeight uint64,
+) ([]*component.TradeBondWithGOV, error) {
+	return nil, nil
+}

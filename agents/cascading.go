@@ -158,7 +158,41 @@ func (ca *CascadingAgent) buildContractingProposal(price uint64) (*entities.Subm
 }
 
 func (ca *CascadingAgent) buildExpandingProposal(price uint64) (*entities.SubmitDCBProposalMeta, error) {
-	return nil, nil
+	blockHeight, err := ca.Data.BlockHeight()
+	if err != nil {
+		return nil, err
+	}
+
+	var sales []component.SaleData
+	var trades []*component.TradeBondWithGOV
+	var errSale, errTrade error
+
+	circulation, err := ca.Data.ConstantCirculating()
+	if err != nil {
+		return nil, err
+	}
+
+	mintAmount := uint64(float64(price-Peg) * float64(circulation) / float64(Peg))
+	if mintAmount < MinAmountToMint {
+		return nil, nil
+	}
+
+	fmt.Println(mintAmount)
+	if ca.NumSaleAccepted < NumSaleToTry {
+		// Buy bonds from open market
+		sales, errSale = buildCrowdsalesBuyBond(mintAmount, price, blockHeight)
+	}
+
+	if sales == nil && ca.NumTradeAccepted == 0 {
+		// Buy bonds from GOV
+		trades, errTrade = buildTradeBuyBond(mintAmount, blockHeight)
+	}
+
+	if sales == nil && trades == nil {
+		return nil, entities.CheckError(errSale, errTrade)
+	}
+	proposal := ca.buildProposal(sales, trades, nil, nil)
+	return proposal, nil
 }
 
 func (ca *CascadingAgent) evaluatingProposal() (bool, error) {
