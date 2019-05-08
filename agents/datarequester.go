@@ -72,11 +72,53 @@ func (dr *DataRequester) AssetPrice(assetID common.Hash) (uint64, error) {
 }
 
 func (dr *DataRequester) BondsCirculating() ([]*entities.DCBBondInfo, error) {
-	return nil, nil
+	bondTypes, err := dr.bondTypes()
+	if err != nil {
+		return nil, err
+	}
+
+	bondInfos := []*entities.DCBBondInfo{}
+	for _, b := range bondTypes {
+		bondID, err := common.NewHashFromStr(b.BondID)
+		if err != nil {
+			continue
+		}
+		bondInfos = append(bondInfos, &entities.DCBBondInfo{
+			Amount:   b.TotalIssue - b.Available,
+			BondID:   *bondID,
+			Price:    b.BuyPrice,
+			Maturity: b.Maturity + b.StartSellingAt,
+			BuyBack:  b.BuyBackPrice,
+		})
+	}
+	return bondInfos, nil
 }
 
 func (dr *DataRequester) CurrentSellingBond() (*entities.DCBBondInfo, error) {
-	return nil, nil
+	method := rpcserver.GetCurrentSellingBondTypes
+	params := []interface{}{}
+	resp := &entities.BondTypesResponse{}
+	err := dr.RPCClient.RPCCall(method, params, resp)
+	if err != nil || resp.RPCError != nil {
+		return nil, entities.AggErr(err, resp.RPCError)
+	}
+
+	var bond *entities.DCBBondInfo
+	for _, b := range resp.Result.BondTypes {
+		bondID, err := common.NewHashFromStr(b.BondID)
+		if err != nil {
+			continue
+		}
+		bond = &entities.DCBBondInfo{
+			Amount:   b.TotalIssue - b.Available,
+			BondID:   *bondID,
+			Price:    b.BuyPrice,
+			Maturity: b.Maturity + b.StartSellingAt,
+			BuyBack:  b.BuyBackPrice,
+		}
+		break
+	}
+	return bond, nil
 }
 
 func (dr *DataRequester) bondTypes() ([]*jsonresult.GetBondTypeResultItem, error) {

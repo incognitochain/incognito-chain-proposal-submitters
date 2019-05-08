@@ -128,7 +128,6 @@ func buildTradeBuyBond(
 	dr *DataRequester,
 ) ([]*component.TradeBondWithGOV, error) {
 	// Check if GOV's selling bond can cover mintAmount of Constant
-	var bondToBuy *entities.DCBBondInfo
 	bondToBuy, err := dr.CurrentSellingBond()
 	if err != nil || bondToBuy == nil {
 		return nil, err
