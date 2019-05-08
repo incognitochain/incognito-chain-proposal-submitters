@@ -190,6 +190,12 @@ func (ca *CascadingAgent) evaluatingProposal() (bool, error) {
 	return false, nil
 }
 
+func (ca *CascadingAgent) buildHoldingPegProposal(price uint64) (*entities.SubmitDCBProposalMeta, error) {
+	ca.NumSaleAccepted = 0
+	ca.NumTradeAccepted = 0
+	return nil, nil
+}
+
 func (ca *CascadingAgent) Execute() {
 	fmt.Println("CascadingAgent agent is executing...")
 	if evaluating, err := ca.evaluatingProposal(); err != nil {
@@ -214,7 +220,7 @@ func (ca *CascadingAgent) Execute() {
 		// Price is above peg, increase supply
 		proposal, err = ca.buildExpandingProposal(price)
 	} else {
-		return
+		proposal, err = ca.buildHoldingPegProposal(price)
 	}
 
 	if err != nil {
