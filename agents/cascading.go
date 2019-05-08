@@ -134,12 +134,13 @@ func (ca *CascadingAgent) buildContractingProposal(price uint64) (*entities.Subm
 		return nil, nil
 	}
 
-	if ca.NumSaleAccepted == 0 {
+	fmt.Println(burnAmount)
+	if ca.NumSaleAccepted < NumSaleToTry {
 		// Sell bonds to open market
 		sales, errSale = buildCrowdsalesSellBond(burnAmount, price, blockHeight, bonds)
 	}
 
-	if sales == nil && ca.NumTradeAccepted == 0 {
+	if sales == nil && ca.NumTradeAccepted < NumTradeToTry {
 		// Sell bonds to GOV
 		trades, errTrade = buildTradeSellBond(burnAmount, blockHeight, bonds)
 	}
