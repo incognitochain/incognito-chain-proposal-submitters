@@ -110,7 +110,7 @@ func (dr *DataRequester) CurrentSellingBond() (*entities.DCBBondInfo, error) {
 			continue
 		}
 		bond = &entities.DCBBondInfo{
-			Amount:   b.TotalIssue - b.Available,
+			Amount:   b.Available,
 			BondID:   *bondID,
 			Price:    b.BuyPrice,
 			Maturity: b.Maturity + b.StartSellingAt,

@@ -127,10 +127,14 @@ func buildTradeBuyBond(
 	blockHeight uint64,
 	dr *DataRequester,
 ) ([]*component.TradeBondWithGOV, error) {
-	// Check if GOV's selling bond can cover mintAmount of Constant
 	bondToBuy, err := dr.CurrentSellingBond()
 	if err != nil || bondToBuy == nil {
 		return nil, err
+	}
+
+	// Check if GOV's selling bond can cover mintAmount of Constant
+	if bondToBuy.Amount*bondToBuy.Price < mintAmount {
+		return nil, nil
 	}
 
 	amount := 1 + (mintAmount-1)/bondToBuy.Price
