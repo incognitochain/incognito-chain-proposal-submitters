@@ -135,7 +135,7 @@ func (ca *CascadingAgent) buildContractingProposal(price uint64) (*entities.Subm
 		return nil, nil
 	}
 
-	fmt.Println(burnAmount)
+	fmt.Println("amount to burn:", burnAmount)
 	if ca.NumSaleAccepted < NumSaleToTry {
 		// Sell bonds to open market
 		sales, errSale = buildCrowdsalesSellBond(burnAmount, price, blockHeight, bonds)
@@ -178,13 +178,13 @@ func (ca *CascadingAgent) buildExpandingProposal(price uint64) (*entities.Submit
 		return nil, nil
 	}
 
-	fmt.Println(mintAmount)
+	fmt.Println("amount to mint:", mintAmount)
 	if ca.NumSaleAccepted < NumSaleToTry {
 		// Buy bonds from open market
 		sales, errSale = buildCrowdsalesBuyBond(mintAmount, price, blockHeight, ca.Data)
 	}
 
-	if sales == nil && ca.NumTradeAccepted == 0 {
+	if sales == nil && ca.NumTradeAccepted < NumTradeToTry {
 		// Buy bonds from GOV
 		trades, errTrade = buildTradeBuyBond(mintAmount, blockHeight, ca.Data)
 	}
@@ -219,6 +219,15 @@ func (ca *CascadingAgent) evaluatingProposal() (bool, error) {
 
 	if ca.Proposal.Data.ConstitutionIndex == info.ConstitutionIndex {
 		return true, nil // Voting submitted proposal
+	}
+
+	// Increase count if new proposal has sale, trade or reserve spending
+	// TODO(@0xbunyip): check content of sales/trades, whether it matches submitting proposal
+	if len(info.DCBParams.ListSaleData) > 0 {
+		ca.NumSaleAccepted += 1
+	}
+	if len(info.DCBParams.TradeBonds) > 0 {
+		ca.NumTradeAccepted += 1
 	}
 
 	ca.Proposal = nil // New term
@@ -265,6 +274,7 @@ func (ca *CascadingAgent) Execute() {
 
 	// Submit proposal and save TxID
 	if proposal == nil {
+		fmt.Println("Assets unavailable, no proposal created")
 		return
 	}
 

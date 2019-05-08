@@ -21,5 +21,5 @@ const (
 	// Maximum number of terms with crowdsales and trades to try before moving
 	// on to the next tool
 	NumSaleToTry  = 3
-	NumTradeToTry = 1
+	NumTradeToTry = 2
 )
